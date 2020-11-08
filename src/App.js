@@ -1,24 +1,35 @@
-import logo from './logo.svg';
-import './App.css';
+import styled from 'styled-components';
+import { FiMusic } from 'react-icons/fi';
+import Scales from './components/Scales';
+
+const Container = styled.div`
+  max-width: 1200px;
+  padding: 2rem;
+  margin: 0 auto;
+  color: #555;
+  
+  .header {
+    display: flex;
+    font-size: 31px;
+    margin: 1rem 0;
+    h1 {
+      font-weight: 600;
+      font-size: 27px;
+      display: inline-block;
+      margin: 0 1.4rem;
+    }
+  }
+`;
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Container>
+      <div className="header">
+        <FiMusic />
+        <h1>Music Trainer</h1>
+      </div>
+      <Scales />
+    </Container>    
   );
 }
 
