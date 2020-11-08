@@ -3,7 +3,7 @@ import { FiMusic } from 'react-icons/fi';
 import Scales from './components/Scales';
 
 const Container = styled.div`
-  max-width: 1200px;
+  max-width: 1100px;
   padding: 2rem;
   margin: 0 auto;
   color: #555;
