@@ -54,21 +54,30 @@ const GenerateButton = styled.div`
   text-align: left;
   `;
 
+const Settings = styled.div`
+  margin: 1.5rem 0 0;
+`;
+
 const ScaleDisplay = styled.h3`
+  margin: 0;
   position: absolute;
   font-size: 42px;
-  right: calc(5% + 2rem);
-  top: 3rem;
+  right: calc(8% + 2rem);
+  top: calc(50% - 10px);
   color: #333;
   width: 60px;
 `;
 
 export default function Scales() {
   const [scale, setScale] = useState();
+  const [withMinors, setWithMinors] = useState(true);
 
+  // todo: generate a random order and cycle through to avoid dupes
   const generateScale = () => {
     const randomIndex = Math.floor(Math.random() * 12);
-    setScale(scales[randomIndex]);
+    let newScale = scales[randomIndex];
+    if (withMinors) newScale += Math.floor(Math.random() * 2) ? 'min' : '';
+    setScale(newScale);
   }
 
   return (
@@ -76,6 +85,10 @@ export default function Scales() {
       <div className="title">
         Scales
       </div>
+      <Settings>
+      <label htmlFor="withMinors" style={{marginRight: 16}}>With minors:</label>
+      <input id="withMinors" name="withMinors" type="checkbox" value={withMinors} onChange={e => setWithMinors(e.target.checked)} />
+      </Settings>
       <GenerateButton onClick={generateScale}>
         Generate scale
       </GenerateButton>
