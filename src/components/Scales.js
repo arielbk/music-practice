@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import SheetMusic from 'react-sheet-music';
 import MidiPlayer from './MidiPlayer';
+import {GrFormNextLink} from 'react-icons/gr';
 
 const scales = {
+  // 0 - 11 are major scales
   C: 'C2 D2 E2 F2 G2 A2 B2 c2',
   G: 'G2 A2 B2 c2 d2 e2 ^f2 g2',
   D: 'D2 E2 ^F2 G2 A2 B2 ^c2 d2',
@@ -16,16 +18,28 @@ const scales = {
   'E♭': '_E2 F2 G2 _A2 _B2 c2 d2 _e2',
   'B♭': '_B,2 C2 D2 _E2 F2 G2 A2 _B2',
   'F': 'F2 G2 A2 _B2 c2 d2 e2 f2',  
+  // 12 - 23 are minor scales
+  Amin: 'A,2 B,2 C2 D2 E2 F2 G2 A2',
+  Emin: 'E2 ^F2 G2 A2 B2 c2 d2 e2',
+  Bmin: 'B,2 ^C2 D2 E2 ^F2 G2 A2 B2',
+  'F♯min': '^F2 ^G2 A2 B2 ^c2 d2 e2 ^f2',
+  'C♯min': '^C2 ^D2 E2 ^F2 ^G2 A2 B2 ^c2',
+  'G♯min': '^G,2 ^A,2 B,2 ^C2 ^D2 E2 ^F2 ^G2',
+  'D♯min': '^D2 ^E2 ^F2 ^G2 ^A2 B2 ^c2 ^d2',
+  'B♭min': '_B,2 C2 _D2 _E2 F2 _G2 _A2 _B2',
+  'Fmin': 'F2 G2 _A2 _B2 c2 _d2 _e2 f2',
+  'Cmin': 'C2 D2 _E2 F2 G2 _A2 _B2 c2',
+  'Gmin': 'G2 A2 _B2 c2 d2 _e2 f2 g2',
+  'Dmin': 'D2 E2 F2 G2 A2 _B2 c2 d2',  
 }
 
 const Container = styled.div`
   position: relative;
   max-width: 1200px;
-  padding: 4rem;
+  padding: 4rem 3rem;
   margin: 0 auto 3rem;
   color: #333;
   background: #fff;
-  margin-top: 3rem;
   border-radius: 7px;
   box-shadow: 0 3px 30px rgba(0,0,0,0.02);
   
@@ -53,21 +67,39 @@ const Container = styled.div`
 `;
 
 const GenerateButton = styled.div`
-  display: inline-block;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
   padding: 1rem 3rem;
   font-size: 1.4rem;
   background: #eee;
-  border: none;
+  /* border: 2px solid #ccc; */
   border-radius: 7px;
   cursor: pointer;
   margin: 6rem 0 3rem;
   text-align: left;
+  color: #777;
+  svg {
+    font-size: 2rem;
+    margin-left: 1rem;
+    transform: translateX(0px);
+    transition: 0.3s;
+  }
+  transition: 0.1s;
+
+  &:hover {
+    background: #ddd;
+    svg {
+      transform: translateX(10px);
+    }
+  }
 `;
 
 const Settings = styled.div`
-  margin: 1.5rem 0 0;
+  padding: 2rem 0;
   color: #999;
   font-weight: 600;
+  border-bottom: 1px solid #eee;
 `;
 
 const ScaleDisplay = styled.h3`
@@ -92,8 +124,18 @@ const ScaleDisplay = styled.h3`
 `;
 
 const SheetContainer = styled.div`
-  ${props => props.showNotes ? '' : 'filter: blur(17px);'}
+  ${props => props.showNotes ? '' : 'filter: blur(15px);'}
   height: 130px;
+  transition: 0.2s filter;
+  margin: 0 auto;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  #paper {
+    width: 750px;
+  }
 `;
 
 export default function Scales() {
@@ -105,15 +147,16 @@ export default function Scales() {
 
   // todo: generate a random order and cycle through to avoid dupes
   const generateScale = () => {
-    const randomIndex = Math.floor(Math.random() * 12);
+    const multiplier = withMinors ? 24 : 12;
+    const randomIndex = Math.floor(Math.random() * multiplier);
     let newScale = Object.keys(scales)[randomIndex];
-    if (withMinors) newScale += Math.floor(Math.random() * 2) ? 'min' : '';
     setScale(newScale);
   }
 
   useEffect(() => {
     if (!scale) return;
-    let reverseScale = scales[scale]?.split(' ').reverse();
+    let ourScale = scales[scale].split(' ');
+    let reverseScale = ourScale.reverse();
     reverseScale.shift();
     setScaleNotes(`|${scales[scale]} ${reverseScale}|`);
   }, [scale])
@@ -124,22 +167,20 @@ export default function Scales() {
         Scales
       </div>
       <Settings>
-      <label htmlFor="withMinors" style={{marginRight: 16}}>With minors:</label>
-      <input disabled id="withMinors" name="withMinors" type="checkbox" checked={withMinors} onChange={e => setWithMinors(e.target.checked)} />
-      <label htmlFor="showNotes" style={{marginRight: 16, marginLeft: 32}}>Show notes:</label>
-      <input id="showNotes" name="showNotes" type="checkbox" checked={showNotes} onChange={e => setShowNotes(e.target.checked)} />
+      <label htmlFor="withMinors" style={{marginRight: 16}}>Include minors:</label>
+      <input id="withMinors" name="withMinors" type="checkbox" checked={withMinors} onChange={e => setWithMinors(e.target.checked)} />
       <label htmlFor="bpm" style={{marginRight: 16, marginLeft: 32}}>BPM:</label>
       <input id="bpm" name="bpm" type="number" value={bpm} onChange={e => setBpm(e.target.value)} />
       </Settings>
       <GenerateButton onClick={generateScale}>
         Random scale
+        <GrFormNextLink />
       </GenerateButton>
       {scale ? <ScaleDisplay>{scale}</ScaleDisplay> : ''}
 
-      {/* // todo: CSS blur effect if not shown */}
       {scaleNotes ? (<>
         <MidiPlayer notation={scaleNotes} bpm={bpm} /> 
-        <SheetContainer showNotes={showNotes}>
+        <SheetContainer showNotes={showNotes} onMouseEnter={() => setShowNotes(true)} onMouseLeave={() => setShowNotes(false)}>
         <SheetMusic notation={scaleNotes} />
         </SheetContainer>
       </>) : ''}

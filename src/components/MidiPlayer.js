@@ -3,7 +3,7 @@ import { Midi } from 'react-abc';
 
 const MidiContainer = styled.div`
   width: 50%;
-  margin: 2rem 0 5rem;
+  margin: 4rem 0 5rem;
   background: #ccc;
   border-radius: 7px;
   overflow: hidden;
