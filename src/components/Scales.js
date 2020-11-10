@@ -33,6 +33,15 @@ const scales = {
   'Dmin': 'D2 E2 F2 G2 A2 _B2 c2 d2',  
 }
 
+function shuffleArray(array) {
+  const shuffledArray = [...array];
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
+  }
+  return shuffledArray;
+}
+
 const Container = styled.div`
   position: relative;
   max-width: 1200px;
@@ -73,19 +82,19 @@ const GenerateButton = styled.div`
   padding: 1rem 3rem;
   font-size: 1.4rem;
   background: #eee;
-  /* border: 2px solid #ccc; */
   border-radius: 7px;
   cursor: pointer;
   margin: 6rem 0 3rem;
   text-align: left;
   color: #777;
+  transition: 0.1s;
+
   svg {
     font-size: 2rem;
-    margin-left: 1rem;
+    margin-left: 2rem;
     transform: translateX(0px);
     transition: 0.3s;
   }
-  transition: 0.1s;
 
   &:hover {
     background: #ddd;
@@ -96,7 +105,7 @@ const GenerateButton = styled.div`
 `;
 
 const Settings = styled.div`
-  padding: 2rem 0;
+  padding: 2rem;
   color: #999;
   font-weight: 600;
   border-bottom: 1px solid #eee;
@@ -139,19 +148,26 @@ const SheetContainer = styled.div`
 `;
 
 export default function Scales() {
+  const [withMinors, setWithMinors] = useState(false);
+  const [shuffledScales, setShuffledScales] = useState();
+  const [scaleIndex, setScaleIndex] = useState(0);
   const [scale, setScale] = useState();
   const [scaleNotes, setScaleNotes] = useState();
-  const [withMinors, setWithMinors] = useState(false);
   const [showNotes, setShowNotes] = useState(false);
   const [bpm, setBpm] = useState(90);
 
-  // todo: generate a random order and cycle through to avoid dupes
-  const generateScale = () => {
-    const multiplier = withMinors ? 24 : 12;
-    const randomIndex = Math.floor(Math.random() * multiplier);
-    let newScale = Object.keys(scales)[randomIndex];
-    setScale(newScale);
+  const shuffleScales = () => setShuffledScales(shuffleArray(Object.keys(scales)));
+
+  const nextScale = () => {
+    if (scaleIndex !== undefined) return shuffleScales();
+    if (scaleIndex === shuffledScales.length - 1) return shuffleScales();
+    setScaleIndex(scaleIndex + 1);
   }
+
+  useEffect(() => {
+    if (!shuffledScales) return;
+    setScale(shuffledScales[scaleIndex]);
+  }, [shuffledScales, scaleIndex]);
 
   useEffect(() => {
     if (!scale) return;
@@ -159,7 +175,7 @@ export default function Scales() {
     let reverseScale = ourScale.reverse();
     reverseScale.shift();
     setScaleNotes(`|${scales[scale]} ${reverseScale}|`);
-  }, [scale])
+  }, [scale]);
 
   return (
     <Container>
@@ -172,7 +188,7 @@ export default function Scales() {
       <label htmlFor="bpm" style={{marginRight: 16, marginLeft: 32}}>BPM:</label>
       <input id="bpm" name="bpm" type="number" value={bpm} onChange={e => setBpm(e.target.value)} />
       </Settings>
-      <GenerateButton onClick={generateScale}>
+      <GenerateButton onClick={nextScale}>
         Random scale
         <GrFormNextLink />
       </GenerateButton>

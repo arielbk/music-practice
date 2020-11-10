@@ -4,17 +4,16 @@ import Scales from './components/Scales';
 
 const Container = styled.div`
   max-width: 1100px;
-  padding: 2rem;
-  margin: 1rem auto;
+  margin: 3rem auto;
   color: #555;
   
   .header {
     display: flex;
-    font-size: 31px;
-    margin: 0 0;
+    font-size: 42px;
+    margin: 0;
     h1 {
       font-weight: 600;
-      font-size: 27px;
+      font-size: 34px;
       display: inline-block;
       margin: 0 1.4rem 2rem;
     }
