@@ -133,9 +133,11 @@ const ScaleDisplay = styled.h3`
 `;
 
 const SheetContainer = styled.div`
-  ${props => props.showNotes ? '' : 'filter: blur(15px);'}
+  position: relative;
+  color: #000;
+  ${props => props.showNotes ? '' : `filter: blur(15px);`}
   height: 130px;
-  transition: 0.2s filter;
+  transition: 0.07s filter;
   margin: 0 auto;
   text-align: center;
   display: flex;
@@ -144,6 +146,32 @@ const SheetContainer = styled.div`
 
   #paper {
     width: 750px;
+  }
+`;
+
+const HoverViewLabel = styled.div`
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.7rem;
+  background: rgba(255, 255, 255, 0.5);
+  padding: 0.4rem 0.7rem;
+  border-radius: 3px;
+`;
+
+const MidiContainer = styled.div`
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+
+  form {
+    margin-right: 2rem;
+    border: 1px solid #eee;
+    padding: 2rem 1rem;
+    top: -1rem;
+    position: relative;
   }
 `;
 
@@ -185,8 +213,6 @@ export default function Scales() {
       <Settings>
       <label htmlFor="withMinors" style={{marginRight: 16}}>Include minors:</label>
       <input id="withMinors" name="withMinors" type="checkbox" checked={withMinors} onChange={e => setWithMinors(e.target.checked)} />
-      <label htmlFor="bpm" style={{marginRight: 16, marginLeft: 32}}>BPM:</label>
-      <input id="bpm" name="bpm" type="number" value={bpm} onChange={e => setBpm(e.target.value)} />
       </Settings>
       <GenerateButton onClick={nextScale}>
         Random scale
@@ -195,10 +221,19 @@ export default function Scales() {
       {scale ? <ScaleDisplay>{scale}</ScaleDisplay> : ''}
 
       {scaleNotes ? (<>
-        <MidiPlayer notation={scaleNotes} bpm={bpm} /> 
+          <MidiContainer>
+            <form>
+              <label htmlFor="bpm" style={{marginRight: 16, marginLeft: 32}}>BPM:</label>
+              <input id="bpm" name="bpm" type="number" value={bpm} onChange={e => setBpm(e.target.value)} />
+            </form>
+            <MidiPlayer notation={scaleNotes} bpm={bpm} /> 
+          </MidiContainer>
+        <div style={{position: 'relative'}}>
         <SheetContainer showNotes={showNotes} onMouseEnter={() => setShowNotes(true)} onMouseLeave={() => setShowNotes(false)}>
         <SheetMusic notation={scaleNotes} />
         </SheetContainer>
+        {showNotes ? '' : <HoverViewLabel>Hover to view sheet</HoverViewLabel>}
+        </div>
       </>) : ''}
       
     </Container>
