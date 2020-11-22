@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { FiMusic } from 'react-icons/fi';
 import Scales from './components/Scales';
 import CircleOfFifths from './components/CircleOfFifths';
+import { Box } from '@chakra-ui/react';
 
 const Container = styled.div`
   max-width: 1100px;
@@ -29,7 +30,9 @@ function App() {
         <h1>Music Trainer</h1>
       </div>
       <Scales />
-      <CircleOfFifths />
+      <Box textAlign="center" mx="auto">
+        <CircleOfFifths style={{ display: 'inline-block' }}/>
+      </Box>
     </Container>    
   );
 }

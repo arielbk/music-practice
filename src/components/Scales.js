@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import SheetMusic from 'react-sheet-music';
 import MidiPlayer from './MidiPlayer';
 import {GrFormNextLink} from 'react-icons/gr';
+import { Checkbox } from '@chakra-ui/react';
 
 const scales = {
   // 0 - 11 are major scales
@@ -121,15 +122,15 @@ const ScaleDisplay = styled.h3`
   right: calc(5% + 2rem);
   top: calc(50% - 170px);
   color: #333;
-  width: 60px;
   text-align: center;
   background: #fff;
   height: 220px;
-  width: 220px;
+  min-width: 220px;
   border-radius: 28px;
   background: #fff;
   box-shadow: 0 3px 30px rgba(0,0,0,0.05);
   border: 1px solid #eee;
+  padding: 1rem;
 `;
 
 const SheetContainer = styled.div`
@@ -176,27 +177,34 @@ const MidiContainer = styled.div`
 `;
 
 export default function Scales() {
-  const [withMinors, setWithMinors] = useState(false);
+  const [withMinors, setWithMinors] = useState(true);
+
   const [shuffledScales, setShuffledScales] = useState();
   const [scaleIndex, setScaleIndex] = useState(0);
   const [scale, setScale] = useState();
+
   const [scaleNotes, setScaleNotes] = useState();
   const [showNotes, setShowNotes] = useState(false);
   const [bpm, setBpm] = useState(90);
 
-  const shuffleScales = () => setShuffledScales(shuffleArray(Object.keys(scales)));
+  
+  const shuffleScales = (filtered) => {
+    setScaleIndex(0);
+    setShuffledScales(shuffleArray(filtered));
+  }
 
   const nextScale = () => {
-    if (scaleIndex !== undefined) return shuffleScales();
-    if (scaleIndex === shuffledScales.length - 1) return shuffleScales();
+    if (!shuffledScales || scaleIndex === shuffledScales.length - 1) return shuffleScales();
     setScaleIndex(scaleIndex + 1);
   }
 
+  // set the scale name
   useEffect(() => {
     if (!shuffledScales) return;
     setScale(shuffledScales[scaleIndex]);
   }, [shuffledScales, scaleIndex]);
 
+  // set the scale notes
   useEffect(() => {
     if (!scale) return;
     let ourScale = scales[scale].split(' ');
@@ -205,14 +213,21 @@ export default function Scales() {
     setScaleNotes(`|${scales[scale]} ${reverseScale}|`);
   }, [scale]);
 
+  // reshuffle the scale when settings change
+  useEffect(() =>
+    shuffleScales(
+      Object.keys(scales).filter(
+        scale => withMinors ? true : !scale.includes('min')
+      )
+    ), [withMinors]);
+
   return (
     <Container>
       <div className="title">
         Scales
       </div>
       <Settings>
-      <label htmlFor="withMinors" style={{marginRight: 16}}>Include minors:</label>
-      <input id="withMinors" name="withMinors" type="checkbox" checked={withMinors} onChange={e => setWithMinors(e.target.checked)} />
+      <Checkbox checked={withMinors} onChange={e => setWithMinors(e.target.checked)}>Include minors</Checkbox>
       </Settings>
       <GenerateButton onClick={nextScale}>
         Random scale
