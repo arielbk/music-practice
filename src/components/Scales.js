@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import SheetMusic from 'react-sheet-music';
 import MidiPlayer from './MidiPlayer';
-import {GrFormNextLink} from 'react-icons/gr';
+import { GrFormNextLink } from 'react-icons/gr';
 import { Checkbox } from '@chakra-ui/react';
 
 const scales = {
@@ -18,7 +18,7 @@ const scales = {
   'A♭': '_A,2 _B,2 C2 _D2 _E2 F2 G2 _A2',
   'E♭': '_E2 F2 G2 _A2 _B2 c2 d2 _e2',
   'B♭': '_B,2 C2 D2 _E2 F2 G2 A2 _B2',
-  'F': 'F2 G2 A2 _B2 c2 d2 e2 f2',  
+  F: 'F2 G2 A2 _B2 c2 d2 e2 f2',
   // 12 - 23 are minor scales
   Amin: 'A,2 B,2 C2 D2 E2 F2 G2 A2',
   Emin: 'E2 ^F2 G2 A2 B2 c2 d2 e2',
@@ -28,11 +28,11 @@ const scales = {
   'G♯min': '^G,2 ^A,2 B,2 ^C2 ^D2 E2 ^F2 ^G2',
   'D♯min': '^D2 ^E2 ^F2 ^G2 ^A2 B2 ^c2 ^d2',
   'B♭min': '_B,2 C2 _D2 _E2 F2 _G2 _A2 _B2',
-  'Fmin': 'F2 G2 _A2 _B2 c2 _d2 _e2 f2',
-  'Cmin': 'C2 D2 _E2 F2 G2 _A2 _B2 c2',
-  'Gmin': 'G2 A2 _B2 c2 d2 _e2 f2 g2',
-  'Dmin': 'D2 E2 F2 G2 A2 _B2 c2 d2',  
-}
+  Fmin: 'F2 G2 _A2 _B2 c2 _d2 _e2 f2',
+  Cmin: 'C2 D2 _E2 F2 G2 _A2 _B2 c2',
+  Gmin: 'G2 A2 _B2 c2 d2 _e2 f2 g2',
+  Dmin: 'D2 E2 F2 G2 A2 _B2 c2 d2',
+};
 
 function shuffleArray(array) {
   const shuffledArray = [...array];
@@ -51,8 +51,8 @@ const Container = styled.div`
   color: #333;
   background: #fff;
   border-radius: 7px;
-  box-shadow: 0 3px 30px rgba(0,0,0,0.02);
-  
+  box-shadow: 0 3px 30px rgba(0, 0, 0, 0.02);
+
   .title {
     font-weight: 600;
     display: flex;
@@ -65,7 +65,7 @@ const Container = styled.div`
     top: 0;
     border-radius: 7px 7px 0 0;
     padding: 1rem 2rem;
-    box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.05);
   }
 
   input[type='number'] {
@@ -128,7 +128,7 @@ const ScaleDisplay = styled.h3`
   min-width: 220px;
   border-radius: 28px;
   background: #fff;
-  box-shadow: 0 3px 30px rgba(0,0,0,0.05);
+  box-shadow: 0 3px 30px rgba(0, 0, 0, 0.05);
   border: 1px solid #eee;
   padding: 1rem;
 `;
@@ -136,7 +136,7 @@ const ScaleDisplay = styled.h3`
 const SheetContainer = styled.div`
   position: relative;
   color: #000;
-  ${props => props.showNotes ? '' : `filter: blur(15px);`}
+  ${(props) => (props.showNotes ? '' : `filter: blur(15px);`)}
   height: 130px;
   transition: 0.07s filter;
   margin: 0 auto;
@@ -185,18 +185,20 @@ export default function Scales() {
 
   const [scaleNotes, setScaleNotes] = useState();
   const [showNotes, setShowNotes] = useState(false);
-  const [bpm, setBpm] = useState(90);
+  const [bpm, setBpm] = useState(180);
 
-  
+  console.log(shuffledScales);
+
   const shuffleScales = (filtered) => {
     setScaleIndex(0);
     setShuffledScales(shuffleArray(filtered));
-  }
+  };
 
   const nextScale = () => {
-    if (!shuffledScales || scaleIndex === shuffledScales.length - 1) return shuffleScales();
+    if (!shuffledScales || scaleIndex === shuffledScales.length - 1)
+      return shuffleScales();
     setScaleIndex(scaleIndex + 1);
-  }
+  };
 
   // set the scale name
   useEffect(() => {
@@ -214,43 +216,70 @@ export default function Scales() {
   }, [scale]);
 
   // reshuffle the scale when settings change
-  useEffect(() =>
-    shuffleScales(
-      Object.keys(scales).filter(
-        scale => withMinors ? true : !scale.includes('min')
-      )
-    ), [withMinors]);
+  useEffect(
+    () =>
+      shuffleScales(
+        Object.keys(scales).filter((scale) =>
+          withMinors ? true : !scale.includes('min')
+        )
+      ),
+    [withMinors]
+  );
 
   return (
     <Container>
-      <div className="title">
-        Scales
-      </div>
+      <div className="title">Scales</div>
+
       <Settings>
-      <Checkbox checked={withMinors} onChange={e => setWithMinors(e.target.checked)}>Include minors</Checkbox>
+        <Checkbox
+          isChecked={withMinors}
+          onChange={(e) => setWithMinors(e.target.checked)}
+        >
+          Include minors
+        </Checkbox>
       </Settings>
+
       <GenerateButton onClick={nextScale}>
         Random scale
         <GrFormNextLink />
       </GenerateButton>
       {scale ? <ScaleDisplay>{scale}</ScaleDisplay> : ''}
 
-      {scaleNotes ? (<>
+      {scaleNotes ? (
+        <>
           <MidiContainer>
             <form>
-              <label htmlFor="bpm" style={{marginRight: 16, marginLeft: 32}}>BPM:</label>
-              <input id="bpm" name="bpm" type="number" value={bpm} onChange={e => setBpm(e.target.value)} />
+              <label htmlFor="bpm" style={{ marginRight: 16, marginLeft: 32 }}>
+                BPM:
+              </label>
+              <input
+                id="bpm"
+                name="bpm"
+                type="number"
+                value={bpm}
+                onChange={(e) => setBpm(e.target.value)}
+              />
             </form>
-            <MidiPlayer notation={scaleNotes} bpm={bpm} /> 
+            <MidiPlayer notation={scaleNotes} bpm={bpm} />
           </MidiContainer>
-        <div style={{position: 'relative'}}>
-        <SheetContainer showNotes={showNotes} onMouseEnter={() => setShowNotes(true)} onMouseLeave={() => setShowNotes(false)}>
-        <SheetMusic notation={scaleNotes} />
-        </SheetContainer>
-        {showNotes ? '' : <HoverViewLabel>Hover to view sheet</HoverViewLabel>}
-        </div>
-      </>) : ''}
-      
+          <div style={{ position: 'relative' }}>
+            <SheetContainer
+              showNotes={showNotes}
+              onMouseEnter={() => setShowNotes(true)}
+              onMouseLeave={() => setShowNotes(false)}
+            >
+              <SheetMusic notation={scaleNotes} />
+            </SheetContainer>
+            {showNotes ? (
+              ''
+            ) : (
+              <HoverViewLabel>Hover to view sheet</HoverViewLabel>
+            )}
+          </div>
+        </>
+      ) : (
+        ''
+      )}
     </Container>
-  )
+  );
 }
