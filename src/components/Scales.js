@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import SheetMusic from 'react-sheet-music';
 import MidiPlayer from './MidiPlayer';
-import { GrFormNextLink } from 'react-icons/gr';
-import { Checkbox } from '@chakra-ui/react';
+import { FormControl, FormLabel, IconButton, Switch } from '@chakra-ui/react';
+import { AiOutlineStepBackward, AiOutlineStepForward } from 'react-icons/ai';
+import MusicSheet from './MusicSheet';
 
 const scales = {
   // 0 - 11 are major scales
@@ -76,118 +76,51 @@ const Container = styled.div`
   }
 `;
 
-const GenerateButton = styled.div`
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  padding: 1rem 3rem;
-  font-size: 1.4rem;
-  background: #eee;
-  border-radius: 7px;
-  cursor: pointer;
-  margin: 6rem 0 3rem;
-  text-align: left;
-  color: #777;
-  transition: 0.1s;
-
-  svg {
-    font-size: 2rem;
-    margin-left: 2rem;
-    transform: translateX(0px);
-    transition: 0.3s;
-  }
-
-  &:hover {
-    background: #ddd;
-    svg {
-      transform: translateX(10px);
-    }
-  }
-`;
-
 const Settings = styled.div`
   padding: 2rem;
   color: #999;
   font-weight: 600;
   border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 4rem;
 `;
 
-const ScaleDisplay = styled.h3`
+const ControlContainer = styled.div`
+  width: 600px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 auto;
+  margin: 0 auto 4rem;
+`;
+
+const ScaleDisplay = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 0;
-  position: absolute;
-  font-size: 82px;
-  right: calc(5% + 2rem);
-  top: calc(50% - 170px);
-  color: #333;
-  text-align: center;
   background: #fff;
-  height: 220px;
-  min-width: 220px;
+  height: 280px;
+  width: 280px;
   border-radius: 28px;
   background: #fff;
   box-shadow: 0 3px 30px rgba(0, 0, 0, 0.05);
   border: 1px solid #eee;
   padding: 1rem;
-`;
-
-const SheetContainer = styled.div`
-  position: relative;
-  color: #000;
-  ${(props) => (props.showNotes ? '' : `filter: blur(15px);`)}
-  height: 130px;
-  transition: 0.07s filter;
-  margin: 0 auto;
-  text-align: center;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  #paper {
-    width: 750px;
-  }
-`;
-
-const HoverViewLabel = styled.div`
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 0.7rem;
-  background: rgba(255, 255, 255, 0.5);
-  padding: 0.4rem 0.7rem;
-  border-radius: 3px;
-`;
-
-const MidiContainer = styled.div`
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  width: 100%;
-
-  form {
-    margin-right: 2rem;
-    border: 1px solid #eee;
-    padding: 2rem 1rem;
-    top: -1rem;
-    position: relative;
+  h3 {
+    font-size: 82px;
+    color: #333;
   }
 `;
 
 export default function Scales() {
-  const [withMinors, setWithMinors] = useState(true);
+  const [includeMinors, setIncludeMinors] = useState(true);
 
   const [shuffledScales, setShuffledScales] = useState();
   const [scaleIndex, setScaleIndex] = useState(0);
   const [scale, setScale] = useState();
 
   const [scaleNotes, setScaleNotes] = useState();
-  const [showNotes, setShowNotes] = useState(false);
-  const [bpm, setBpm] = useState(180);
-
-  console.log(shuffledScales);
 
   const shuffleScales = (filtered) => {
     setScaleIndex(0);
@@ -198,6 +131,10 @@ export default function Scales() {
     if (!shuffledScales || scaleIndex === shuffledScales.length - 1)
       return shuffleScales();
     setScaleIndex(scaleIndex + 1);
+  };
+  const previousScale = () => {
+    if (!scaleIndex) return;
+    setScaleIndex(scaleIndex - 1);
   };
 
   // set the scale name
@@ -220,10 +157,10 @@ export default function Scales() {
     () =>
       shuffleScales(
         Object.keys(scales).filter((scale) =>
-          withMinors ? true : !scale.includes('min')
+          includeMinors ? true : !scale.includes('min')
         )
       ),
-    [withMinors]
+    [includeMinors]
   );
 
   return (
@@ -231,51 +168,44 @@ export default function Scales() {
       <div className="title">Scales</div>
 
       <Settings>
-        <Checkbox
-          isChecked={withMinors}
-          onChange={(e) => setWithMinors(e.target.checked)}
-        >
-          Include minors
-        </Checkbox>
+        <FormControl display="flex" alignItems="center">
+          <FormLabel htmlFor="include-minors" mb={0}>
+            Include minors?
+          </FormLabel>
+          <Switch
+            id="include-minors"
+            colorScheme="teal"
+            isChecked={includeMinors}
+            onChange={(e) => setIncludeMinors(e.target.checked)}
+          />
+        </FormControl>
       </Settings>
 
-      <GenerateButton onClick={nextScale}>
-        Random scale
-        <GrFormNextLink />
-      </GenerateButton>
-      {scale ? <ScaleDisplay>{scale}</ScaleDisplay> : ''}
+      {scale ? (
+        <ControlContainer>
+          <IconButton
+            icon={<AiOutlineStepBackward />}
+            size="lg"
+            disabled={!scaleIndex}
+            onClick={previousScale}
+          />
+          <ScaleDisplay>
+            <h3>{scale}</h3>
+          </ScaleDisplay>
+          <IconButton
+            icon={<AiOutlineStepForward />}
+            size="lg"
+            onClick={nextScale}
+          />
+        </ControlContainer>
+      ) : (
+        ''
+      )}
 
       {scaleNotes ? (
         <>
-          <MidiContainer>
-            <form>
-              <label htmlFor="bpm" style={{ marginRight: 16, marginLeft: 32 }}>
-                BPM:
-              </label>
-              <input
-                id="bpm"
-                name="bpm"
-                type="number"
-                value={bpm}
-                onChange={(e) => setBpm(e.target.value)}
-              />
-            </form>
-            <MidiPlayer notation={scaleNotes} bpm={bpm} />
-          </MidiContainer>
-          <div style={{ position: 'relative' }}>
-            <SheetContainer
-              showNotes={showNotes}
-              onMouseEnter={() => setShowNotes(true)}
-              onMouseLeave={() => setShowNotes(false)}
-            >
-              <SheetMusic notation={scaleNotes} />
-            </SheetContainer>
-            {showNotes ? (
-              ''
-            ) : (
-              <HoverViewLabel>Hover to view sheet</HoverViewLabel>
-            )}
-          </div>
+          <MusicSheet notation={scaleNotes} />
+          <MidiPlayer notation={scaleNotes} />
         </>
       ) : (
         ''

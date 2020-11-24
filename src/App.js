@@ -2,38 +2,56 @@ import styled from 'styled-components';
 import { FiMusic } from 'react-icons/fi';
 import Scales from './components/Scales';
 import CircleOfFifths from './components/CircleOfFifths';
-import { Box } from '@chakra-ui/react';
+import { Box, Switch, useColorMode } from '@chakra-ui/react';
 
-const Container = styled.div`
-  max-width: 1100px;
-  margin: 3rem auto;
-  color: #555;
-  
-  .header {
-    display: flex;
-    font-size: 42px;
-    margin: 0;
-    h1 {
-      font-weight: 600;
-      font-size: 34px;
-      display: inline-block;
-      margin: 0 1.4rem 2rem;
-    }
+const Header = styled.header`
+  justify-content: space-between;
+  align-items: center;
+  display: flex;
+  font-size: 42px;
+  padding: 2rem 4rem;
+
+  h1 {
+    font-weight: 600;
+    font-size: 34px;
+    display: inline-block;
+    margin: 0 1.4rem 0;
+  }
+  svg {
+    display: inline;
   }
 `;
 
+const Container = styled.div`
+  max-width: 1100px;
+  margin: 0 auto 4rem;
+  color: #555;
+`;
+
 function App() {
+  const { colorMode, toggleColorMode } = useColorMode();
   return (
-    <Container>
-      <div className="header">
-        <FiMusic />
-        <h1>Music Trainer</h1>
-      </div>
-      <Scales />
-      <Box textAlign="center" mx="auto">
-        <CircleOfFifths style={{ display: 'inline-block' }}/>
-      </Box>
-    </Container>    
+    <>
+      <Header>
+        <div>
+          <FiMusic />
+          <h1>Music Trainer</h1>
+        </div>
+        <Switch
+          id="toggle-dark-mode"
+          colorScheme="teal"
+          isChecked={colorMode === 'dark'}
+          onChange={toggleColorMode}
+          size="lg"
+        />
+      </Header>
+      <Container>
+        <Scales />
+        {/* <Box textAlign="center" mx="auto">
+          <CircleOfFifths style={{ display: 'inline-block' }} />
+        </Box> */}
+      </Container>
+    </>
   );
 }
 
