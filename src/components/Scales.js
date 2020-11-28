@@ -82,7 +82,7 @@ const Settings = styled.div`
   font-weight: 600;
   border-bottom: 1px solid #eee;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   margin-bottom: 4rem;
 `;
 
@@ -96,6 +96,7 @@ const ControlContainer = styled.div`
 `;
 
 const ScaleDisplay = styled.div`
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -108,28 +109,40 @@ const ScaleDisplay = styled.div`
   border: 1px solid #eee;
   padding: 1rem;
   h3 {
+    margin-bottom: 1rem;
     font-size: 82px;
     color: #333;
+  }
+  small {
+    position: absolute;
+    bottom: 1rem;
+    font-size: 1rem;
+    color: #bbb;
   }
 `;
 
 export default function Scales() {
   const [includeMinors, setIncludeMinors] = useState(true);
+  const [isShuffle, setIsShuffle] = useState(false);
 
-  const [shuffledScales, setShuffledScales] = useState();
+  const [scaleSequence, setScaleSequence] = useState();
   const [scaleIndex, setScaleIndex] = useState(0);
   const [scale, setScale] = useState();
 
   const [scaleNotes, setScaleNotes] = useState();
 
-  const shuffleScales = (filtered) => {
+  const sequenceScales = (filtered) => {
     setScaleIndex(0);
-    setShuffledScales(shuffleArray(filtered));
+    setScaleSequence(isShuffle ? shuffleArray(filtered) : filtered);
   };
 
   const nextScale = () => {
-    if (!shuffledScales || scaleIndex === shuffledScales.length - 1)
-      return shuffleScales();
+    if (!scaleSequence || scaleIndex === scaleSequence.length - 1)
+      return sequenceScales(
+        Object.keys(scales).filter((scale) =>
+          includeMinors ? true : !scale.includes('min')
+        )
+      );
     setScaleIndex(scaleIndex + 1);
   };
   const previousScale = () => {
@@ -139,9 +152,9 @@ export default function Scales() {
 
   // set the scale name
   useEffect(() => {
-    if (!shuffledScales) return;
-    setScale(shuffledScales[scaleIndex]);
-  }, [shuffledScales, scaleIndex]);
+    if (!scaleSequence) return;
+    setScale(scaleSequence[scaleIndex]);
+  }, [scaleSequence, scaleIndex]);
 
   // set the scale notes
   useEffect(() => {
@@ -155,12 +168,12 @@ export default function Scales() {
   // reshuffle the scale when settings change
   useEffect(
     () =>
-      shuffleScales(
+      sequenceScales(
         Object.keys(scales).filter((scale) =>
           includeMinors ? true : !scale.includes('min')
         )
       ),
-    [includeMinors]
+    [includeMinors, isShuffle]
   );
 
   return (
@@ -179,6 +192,17 @@ export default function Scales() {
             onChange={(e) => setIncludeMinors(e.target.checked)}
           />
         </FormControl>
+        <FormControl display="flex" alignItems="center">
+          <FormLabel htmlFor="is-shuffle" mb={0}>
+            Shuffle scales?
+          </FormLabel>
+          <Switch
+            id="is-shuffle"
+            colorScheme="teal"
+            isChecked={isShuffle}
+            onChange={(e) => setIsShuffle(e.target.checked)}
+          />
+        </FormControl>
       </Settings>
 
       {scale ? (
@@ -186,16 +210,21 @@ export default function Scales() {
           <IconButton
             icon={<AiOutlineStepBackward />}
             size="lg"
-            disabled={!scaleIndex}
+            isDisabled={!scaleIndex}
             onClick={previousScale}
+            fontSize="2rem"
           />
           <ScaleDisplay>
             <h3>{scale}</h3>
+            <small>
+              {scaleIndex + 1} / {scaleSequence.length}
+            </small>
           </ScaleDisplay>
           <IconButton
             icon={<AiOutlineStepForward />}
             size="lg"
             onClick={nextScale}
+            fontSize="2rem"
           />
         </ControlContainer>
       ) : (
