@@ -1,6 +1,7 @@
+import { Input, InputGroup, InputLeftAddon } from '@chakra-ui/react';
 import { useState } from 'react';
-import styled from 'styled-components';
 import { Midi } from 'react-abc';
+import styled from 'styled-components';
 
 const Container = styled.div`
   display: flex;
@@ -10,7 +11,8 @@ const Container = styled.div`
 
   form {
     margin-right: 2rem;
-    border: 1px solid #eee;
+    /* border: 1px solid #eee; */
+    /* background: #eee; */
     padding: 2rem 1rem;
     top: -1rem;
     position: relative;
@@ -30,18 +32,15 @@ export default function MidiPlayer({ notation }) {
   const [bpm, setBpm] = useState(180);
   return (
     <Container>
-      <form>
-        <label htmlFor="bpm" style={{ marginRight: 16, marginLeft: 32 }}>
-          BPM:
-        </label>
-        <input
-          id="bpm"
-          name="bpm"
+      <InputGroup size="sm" width={140} mb="1rem" mr="1rem">
+        <InputLeftAddon fontWeight="800">BPM</InputLeftAddon>
+        <Input
           type="number"
-          value={bpm}
           onChange={(e) => setBpm(e.target.value)}
+          min={0}
+          value={bpm}
         />
-      </form>
+      </InputGroup>
       <MidiControls>
         <Midi
           key={[notation, bpm]}

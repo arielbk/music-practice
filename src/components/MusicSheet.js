@@ -8,7 +8,7 @@ const SheetContainer = styled.div`
   ${(props) => (props.showNotes ? '' : `filter: blur(15px);`)}
   height: 130px;
   transition: 0.07s filter;
-  margin: 0 auto;
+  margin: 4rem auto;
   text-align: center;
   display: flex;
   justify-content: center;

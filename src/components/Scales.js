@@ -1,9 +1,22 @@
 import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import MidiPlayer from './MidiPlayer';
-import { FormControl, FormLabel, IconButton, Switch } from '@chakra-ui/react';
+import {
+  Button,
+  FormControl,
+  FormLabel,
+  IconButton,
+  Link,
+  Modal,
+  ModalCloseButton,
+  ModalContent,
+  ModalOverlay,
+  Switch,
+} from '@chakra-ui/react';
 import { AiOutlineStepBackward, AiOutlineStepForward } from 'react-icons/ai';
+import { FaPuzzlePiece } from 'react-icons/fa';
 import MusicSheet from './MusicSheet';
+import SvgCircleOfFifths from './CircleOfFifths';
 
 const scales = {
   // 0 - 11 are major scales
@@ -46,44 +59,30 @@ function shuffleArray(array) {
 const Container = styled.div`
   position: relative;
   max-width: 1200px;
-  padding: 4rem 3rem;
+  padding: 12rem 3rem 4rem;
   margin: 0 auto 3rem;
   color: #333;
   background: #fff;
   border-radius: 7px;
   box-shadow: 0 3px 30px rgba(0, 0, 0, 0.02);
-
-  .title {
-    font-weight: 600;
-    display: flex;
-    font-size: 21px;
-    background: #f0f0f0;
-    width: 100%;
-    box-sizing: border-box;
-    position: absolute;
-    left: 0;
-    top: 0;
-    border-radius: 7px 7px 0 0;
-    padding: 1rem 2rem;
-    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.05);
-  }
-
-  input[type='number'] {
-    font-size: 1rem;
-    border: none;
-    border-bottom: 1px solid #ccc;
-    width: 3rem;
-  }
 `;
 
 const Settings = styled.div`
-  padding: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2rem 6rem;
   color: #999;
   font-weight: 600;
   border-bottom: 1px solid #eee;
-  display: flex;
-  justify-content: flex-start;
   margin-bottom: 4rem;
+  background: #eee;
+  border-radius: 7px 7px 0 0;
+  width: 100%;
+  box-sizing: border-box;
+  position: absolute;
+  left: 0;
+  top: 0;
 `;
 
 const ControlContainer = styled.div`
@@ -130,6 +129,8 @@ export default function Scales() {
   const [scale, setScale] = useState();
 
   const [scaleNotes, setScaleNotes] = useState();
+
+  const [isCofOpen, setIsCofOpen] = useState(false);
 
   const sequenceScales = (filtered) => {
     setScaleIndex(0);
@@ -178,32 +179,45 @@ export default function Scales() {
 
   return (
     <Container>
-      <div className="title">Scales</div>
-
       <Settings>
-        <FormControl display="flex" alignItems="center">
-          <FormLabel htmlFor="include-minors" mb={0}>
-            Include minors?
-          </FormLabel>
-          <Switch
-            id="include-minors"
-            colorScheme="teal"
-            isChecked={includeMinors}
-            onChange={(e) => setIncludeMinors(e.target.checked)}
-          />
-        </FormControl>
-        <FormControl display="flex" alignItems="center">
-          <FormLabel htmlFor="is-shuffle" mb={0}>
-            Shuffle scales?
-          </FormLabel>
-          <Switch
-            id="is-shuffle"
-            colorScheme="teal"
-            isChecked={isShuffle}
-            onChange={(e) => setIsShuffle(e.target.checked)}
-          />
-        </FormControl>
+        <form>
+          <FormControl display="flex" alignItems="center">
+            <FormLabel htmlFor="include-minors" mb={0}>
+              Include minors?
+            </FormLabel>
+            <Switch
+              id="include-minors"
+              isChecked={includeMinors}
+              onChange={(e) => setIncludeMinors(e.target.checked)}
+              mr="6rem"
+            />
+            <FormLabel htmlFor="is-shuffle" mb={0}>
+              Shuffle scales?
+            </FormLabel>
+            <Switch
+              id="is-shuffle"
+              isChecked={isShuffle}
+              onChange={(e) => setIsShuffle(e.target.checked)}
+            />
+          </FormControl>
+        </form>
+        <Button
+          variant="solid"
+          leftIcon={<FaPuzzlePiece />}
+          onClick={() => setIsCofOpen(true)}
+        >
+          Circle of Fifths
+        </Button>
       </Settings>
+
+      {/* circle of fifths dialog */}
+      <Modal isOpen={isCofOpen} onClose={() => setIsCofOpen(false)} size="xl">
+        <ModalOverlay />
+        <ModalContent background="#fff" width="600px">
+          <ModalCloseButton color="#000" />
+          <SvgCircleOfFifths />
+        </ModalContent>
+      </Modal>
 
       {scale ? (
         <ControlContainer>
