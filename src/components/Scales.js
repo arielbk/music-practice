@@ -1,22 +1,20 @@
-import { useState, useEffect } from 'react';
-import styled from 'styled-components';
-import MidiPlayer from './MidiPlayer';
 import {
   Button,
   FormControl,
   FormLabel,
-  IconButton,
-  Link,
   Modal,
   ModalCloseButton,
   ModalContent,
   ModalOverlay,
   Switch,
 } from '@chakra-ui/react';
-import { AiOutlineStepBackward, AiOutlineStepForward } from 'react-icons/ai';
+import { useEffect, useState } from 'react';
 import { FaPuzzlePiece } from 'react-icons/fa';
-import MusicSheet from './MusicSheet';
+import styled from 'styled-components';
 import SvgCircleOfFifths from './CircleOfFifths';
+import MidiPlayer from './MidiPlayer';
+import MusicSheet from './MusicSheet';
+import ScrollableDisplay from './ScrollableDisplay';
 
 const scales = {
   // 0 - 11 are major scales
@@ -83,41 +81,6 @@ const Settings = styled.div`
   position: absolute;
   left: 0;
   top: 0;
-`;
-
-const ControlContainer = styled.div`
-  width: 600px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 0 auto;
-  margin: 0 auto 4rem;
-`;
-
-const ScaleDisplay = styled.div`
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #fff;
-  height: 280px;
-  width: 280px;
-  border-radius: 28px;
-  background: #fff;
-  box-shadow: 0 3px 30px rgba(0, 0, 0, 0.05);
-  border: 1px solid #eee;
-  padding: 1rem;
-  h3 {
-    margin-bottom: 1rem;
-    font-size: 82px;
-    color: #333;
-  }
-  small {
-    position: absolute;
-    bottom: 1rem;
-    font-size: 1rem;
-    color: #bbb;
-  }
 `;
 
 export default function Scales() {
@@ -220,27 +183,13 @@ export default function Scales() {
       </Modal>
 
       {scale ? (
-        <ControlContainer>
-          <IconButton
-            icon={<AiOutlineStepBackward />}
-            size="lg"
-            isDisabled={!scaleIndex}
-            onClick={previousScale}
-            fontSize="2rem"
-          />
-          <ScaleDisplay>
-            <h3>{scale}</h3>
-            <small>
-              {scaleIndex + 1} / {scaleSequence.length}
-            </small>
-          </ScaleDisplay>
-          <IconButton
-            icon={<AiOutlineStepForward />}
-            size="lg"
-            onClick={nextScale}
-            fontSize="2rem"
-          />
-        </ControlContainer>
+        <ScrollableDisplay
+          currentIndex={scaleIndex}
+          currentName={scale}
+          onPrevious={previousScale}
+          onNext={nextScale}
+          totalItems={scaleSequence.length}
+        />
       ) : (
         ''
       )}
