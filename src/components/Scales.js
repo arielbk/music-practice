@@ -84,6 +84,7 @@ const Settings = styled.div`
 `;
 
 export default function Scales() {
+  const [includeMajors, setIncludeMajors] = useState(true);
   const [includeMinors, setIncludeMinors] = useState(true);
   const [isShuffle, setIsShuffle] = useState(false);
 
@@ -95,18 +96,20 @@ export default function Scales() {
 
   const [isCofOpen, setIsCofOpen] = useState(false);
 
-  const sequenceScales = (filtered) => {
+  const sequenceScales = () => {
+    const filtered = Object.keys(scales).filter((scale) => {
+      if (includeMajors && includeMinors) return true;
+      if (includeMinors) return scale.includes('min');
+      if (includeMajors) return !scale.includes('min');
+      return false;
+    });
     setScaleIndex(0);
     setScaleSequence(isShuffle ? shuffleArray(filtered) : filtered);
   };
 
   const nextScale = () => {
     if (!scaleSequence || scaleIndex === scaleSequence.length - 1)
-      return sequenceScales(
-        Object.keys(scales).filter((scale) =>
-          includeMinors ? true : !scale.includes('min')
-        )
-      );
+      return sequenceScales();
     setScaleIndex(scaleIndex + 1);
   };
   const previousScale = () => {
@@ -130,21 +133,22 @@ export default function Scales() {
   }, [scale]);
 
   // reshuffle the scale when settings change
-  useEffect(
-    () =>
-      sequenceScales(
-        Object.keys(scales).filter((scale) =>
-          includeMinors ? true : !scale.includes('min')
-        )
-      ),
-    [includeMinors, isShuffle]
-  );
+  useEffect(() => sequenceScales(), [includeMajors, includeMinors, isShuffle]);
 
   return (
     <Container>
       <Settings>
         <form>
           <FormControl display="flex" alignItems="center">
+            <FormLabel htmlFor="include-majors" mb={0}>
+              Include majors?
+            </FormLabel>
+            <Switch
+              id="include-majors"
+              isChecked={includeMajors}
+              onChange={(e) => setIncludeMajors(e.target.checked)}
+              mr="4rem"
+            />
             <FormLabel htmlFor="include-minors" mb={0}>
               Include minors?
             </FormLabel>
@@ -152,7 +156,7 @@ export default function Scales() {
               id="include-minors"
               isChecked={includeMinors}
               onChange={(e) => setIncludeMinors(e.target.checked)}
-              mr="6rem"
+              mr="4rem"
             />
             <FormLabel htmlFor="is-shuffle" mb={0}>
               Shuffle scales?
