@@ -98,6 +98,7 @@ export default function ScrollableDisplay({
             animate={center}
             // exit={lastTransition === 'next' ? left : right}
             exit={{ x: 0, y: -15, opacity: 0.5 }}
+            whileHover={{ scale: 1.1 }}
           >
             <h3>{currentName}</h3>
             <small>
