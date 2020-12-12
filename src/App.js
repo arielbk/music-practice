@@ -1,8 +1,7 @@
-import styled from 'styled-components';
+import { Switch, useColorMode } from '@chakra-ui/react';
 import { FiMusic } from 'react-icons/fi';
+import styled from 'styled-components';
 import Scales from './components/Scales';
-import CircleOfFifths from './components/CircleOfFifths';
-import { Box, Switch, useColorMode } from '@chakra-ui/react';
 
 const Header = styled.header`
   justify-content: space-between;
@@ -47,9 +46,6 @@ function App() {
       </Header>
       <Container>
         <Scales />
-        {/* <Box textAlign="center" mx="auto">
-          <CircleOfFifths style={{ display: 'inline-block' }} />
-        </Box> */}
       </Container>
     </>
   );

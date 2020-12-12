@@ -8,7 +8,7 @@ import {
   ModalOverlay,
   Switch,
 } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { FaPuzzlePiece } from 'react-icons/fa';
 import styled from 'styled-components';
 import SvgCircleOfFifths from './CircleOfFifths';
@@ -96,7 +96,7 @@ export default function Scales() {
 
   const [isCofOpen, setIsCofOpen] = useState(false);
 
-  const sequenceScales = () => {
+  const sequenceScales = useCallback(() => {
     const filtered = Object.keys(scales).filter((scale) => {
       if (includeMajors && includeMinors) return true;
       if (includeMinors) return scale.includes('min');
@@ -105,7 +105,7 @@ export default function Scales() {
     });
     setScaleIndex(0);
     setScaleSequence(isShuffle ? shuffleArray(filtered) : filtered);
-  };
+  }, [includeMajors, includeMinors, isShuffle]);
 
   const nextScale = () => {
     if (!scaleSequence || scaleIndex === scaleSequence.length - 1)
@@ -133,7 +133,7 @@ export default function Scales() {
   }, [scale]);
 
   // reshuffle the scale when settings change
-  useEffect(() => sequenceScales(), [includeMajors, includeMinors, isShuffle]);
+  useEffect(() => sequenceScales(), [sequenceScales]);
 
   return (
     <Container>

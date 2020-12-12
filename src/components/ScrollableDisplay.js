@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import { IconButton } from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -59,16 +59,14 @@ export default function ScrollableDisplay({
 }) {
   const [lastTransition, setLastTransition] = useState('next');
 
-  const handlePrevious = () => {
-    console.log('prev');
+  const handlePrevious = useCallback(() => {
     onPrevious();
     setLastTransition('prev');
-  };
-  const handleNext = () => {
-    console.log('next');
+  }, [onPrevious]);
+  const handleNext = useCallback(() => {
     onNext();
     setLastTransition('next');
-  };
+  }, [onNext]);
 
   useEffect(() => {
     // todo: add intersection observer so that this is only when in viewport
@@ -79,7 +77,7 @@ export default function ScrollableDisplay({
     };
     document.addEventListener('keydown', handleKeyPress);
     return () => document.removeEventListener('keydown', handleKeyPress);
-  }, [onPrevious, onNext]);
+  }, [handleNext, handlePrevious]);
 
   return (
     <Container>
