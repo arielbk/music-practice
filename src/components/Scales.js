@@ -1,14 +1,16 @@
 import {
   Button,
-  FormControl,
-  FormLabel,
+  Heading,
   Modal,
   ModalCloseButton,
   ModalContent,
   ModalOverlay,
-  Switch,
+  Radio,
+  RadioGroup,
+  Stack,
 } from '@chakra-ui/react';
 import { useCallback, useEffect, useState } from 'react';
+import { BiShuffle } from 'react-icons/bi';
 import { FaPuzzlePiece } from 'react-icons/fa';
 import styled from 'styled-components';
 import SvgCircleOfFifths from './CircleOfFifths';
@@ -84,10 +86,6 @@ const Settings = styled.div`
 `;
 
 export default function Scales() {
-  const [includeMajors, setIncludeMajors] = useState(true);
-  const [includeMinors, setIncludeMinors] = useState(true);
-  const [isShuffle, setIsShuffle] = useState(false);
-
   const [scaleSequence, setScaleSequence] = useState();
   const [scaleIndex, setScaleIndex] = useState(0);
   const [scale, setScale] = useState();
@@ -95,17 +93,20 @@ export default function Scales() {
   const [scaleNotes, setScaleNotes] = useState();
 
   const [isCofOpen, setIsCofOpen] = useState(false);
+  const [isOrderOpen, setIsOrderOpen] = useState(false);
+  const [order, setOrder] = useState('0');
 
   const sequenceScales = useCallback(() => {
     const filtered = Object.keys(scales).filter((scale) => {
-      if (includeMajors && includeMinors) return true;
-      if (includeMinors) return scale.includes('min');
-      if (includeMajors) return !scale.includes('min');
+      if (order === '0' || order === '1') return true;
+      if (order === '2' || order === '3') return !scale.includes('min');
+      if (order === '4' || order === '5') return scale.includes('min');
       return false;
     });
     setScaleIndex(0);
+    const isShuffle = order === '1' || order === '3' || order === '5';
     setScaleSequence(isShuffle ? shuffleArray(filtered) : filtered);
-  }, [includeMajors, includeMinors, isShuffle]);
+  }, [order]);
 
   const nextScale = () => {
     if (!scaleSequence || scaleIndex === scaleSequence.length - 1)
@@ -138,41 +139,10 @@ export default function Scales() {
   return (
     <Container>
       <Settings>
-        <form>
-          <FormControl display="flex" alignItems="center">
-            <FormLabel htmlFor="include-majors" mb={0}>
-              Include majors?
-            </FormLabel>
-            <Switch
-              id="include-majors"
-              isChecked={includeMajors}
-              onChange={(e) => setIncludeMajors(e.target.checked)}
-              mr="4rem"
-            />
-            <FormLabel htmlFor="include-minors" mb={0}>
-              Include minors?
-            </FormLabel>
-            <Switch
-              id="include-minors"
-              isChecked={includeMinors}
-              onChange={(e) => setIncludeMinors(e.target.checked)}
-              mr="4rem"
-            />
-            <FormLabel htmlFor="is-shuffle" mb={0}>
-              Shuffle scales?
-            </FormLabel>
-            <Switch
-              id="is-shuffle"
-              isChecked={isShuffle}
-              onChange={(e) => setIsShuffle(e.target.checked)}
-            />
-          </FormControl>
-        </form>
-        <Button
-          variant="solid"
-          leftIcon={<FaPuzzlePiece />}
-          onClick={() => setIsCofOpen(true)}
-        >
+        <Button leftIcon={<BiShuffle />} onClick={() => setIsOrderOpen(true)}>
+          Scale Order
+        </Button>
+        <Button leftIcon={<FaPuzzlePiece />} onClick={() => setIsCofOpen(true)}>
           Circle of Fifths
         </Button>
       </Settings>
@@ -183,6 +153,31 @@ export default function Scales() {
         <ModalContent background="#fff" width="600px">
           <ModalCloseButton color="#000" />
           <SvgCircleOfFifths />
+        </ModalContent>
+      </Modal>
+
+      {/* scale order modal */}
+      <Modal
+        isOpen={isOrderOpen}
+        onClose={() => setIsOrderOpen(false)}
+        size="xl"
+      >
+        <ModalOverlay />
+        <ModalContent background="#fff" width="600px" px={16} py={8}>
+          <ModalCloseButton color="#000" />
+          <Heading size="md" mt={8}>
+            Select the configuration in which scales should appear:
+          </Heading>
+          <RadioGroup onChange={setOrder} value={order}>
+            <Stack py={8}>
+              <Radio value="0">Major clockwise, minor counterclockwise</Radio>
+              <Radio value="1">Major and minor shuffle</Radio>
+              <Radio value="2">Major clockwise</Radio>
+              <Radio value="3">Major shuffle</Radio>
+              <Radio value="4">Minor counterclockwise</Radio>
+              <Radio value="5">Minor shuffle</Radio>
+            </Stack>
+          </RadioGroup>
         </ModalContent>
       </Modal>
 
