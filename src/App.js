@@ -1,6 +1,6 @@
 import { Switch, useColorMode } from '@chakra-ui/react';
 import { FiMusic } from 'react-icons/fi';
-import styled from 'styled-components';
+import styled from '@emotion/styled';
 import Scales from './components/Scales';
 
 const Header = styled.header`

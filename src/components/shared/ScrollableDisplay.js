@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import styled from 'styled-components';
+import styled from '@emotion/styled';
 import { IconButton } from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { AiOutlineStepBackward, AiOutlineStepForward } from 'react-icons/ai';

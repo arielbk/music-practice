@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import styled from 'styled-components';
+import styled from '@emotion/styled';
 import SheetMusic from 'react-sheet-music';
 
 const SheetContainer = styled.div`

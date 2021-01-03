@@ -1,7 +1,7 @@
 import { Input, InputGroup, InputLeftAddon } from '@chakra-ui/react';
 import { useState } from 'react';
 import { Midi } from 'react-abc';
-import styled from 'styled-components';
+import styled from '@emotion/styled';
 
 const Container = styled.div`
   display: flex;
@@ -11,8 +11,6 @@ const Container = styled.div`
 
   form {
     margin-right: 2rem;
-    /* border: 1px solid #eee; */
-    /* background: #eee; */
     padding: 2rem 1rem;
     top: -1rem;
     position: relative;
