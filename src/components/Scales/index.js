@@ -5,24 +5,15 @@ import {
   ModalContent,
   ModalOverlay,
 } from '@chakra-ui/react';
-import { useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
 import { FaPuzzlePiece } from 'react-icons/fa';
 import styled from '@emotion/styled';
 import SvgCircleOfFifths from '../shared/CircleOfFifths';
 import MidiPlayer from '../shared/MidiPlayer';
 import MusicSheet from '../shared/MusicSheet';
 import ScrollableDisplay from '../shared/ScrollableDisplay';
-import { majorScales, minorScales } from './notes';
 import ScaleOrder from './ScaleOrder';
-
-function shuffleArray(array) {
-  const shuffledArray = [...array];
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
-  }
-  return shuffledArray;
-}
+import useScale from './useScale';
 
 const Container = styled.div`
   position: relative;
@@ -54,56 +45,17 @@ const Settings = styled.div`
 `;
 
 export default function Scales() {
-  const [scaleSequence, setScaleSequence] = useState(null);
-  const [scaleIndex, setScaleIndex] = useState(0);
-  const [scale, setScale] = useState(null);
-
-  const [scaleNotes, setScaleNotes] = useState(null);
-
   const [isCofOpen, setIsCofOpen] = useState(false);
-  const [order, setOrder] = useState('0');
-
-  const sequenceScales = useCallback(() => {
-    const scales = { ...majorScales, ...minorScales };
-    const filtered = Object.keys(scales).filter((scale) => {
-      if (order === '0' || order === '1') return true;
-      if (order === '2' || order === '3') return !scale.includes('min');
-      if (order === '4' || order === '5') return scale.includes('min');
-      return false;
-    });
-    setScaleIndex(0);
-    const isShuffle = order === '1' || order === '3' || order === '5';
-    const newScaleSequence = isShuffle ? shuffleArray(filtered) : filtered;
-    setScaleSequence(newScaleSequence);
-  }, [order]);
-
-  const nextScale = () => {
-    if (!scaleSequence || scaleIndex === scaleSequence.length - 1)
-      return sequenceScales();
-    setScaleIndex(scaleIndex + 1);
-  };
-  const previousScale = () => {
-    if (!scaleIndex) return;
-    setScaleIndex(scaleIndex - 1);
-  };
-
-  // set the scale name
-  useEffect(() => {
-    if (scaleSequence) setScale(scaleSequence[scaleIndex]);
-  }, [scaleSequence, scaleIndex]);
-
-  // set the scale notes
-  useEffect(() => {
-    if (!scale) return;
-    const scales = { ...majorScales, ...minorScales };
-    let ourScale = scales[scale].split(' ');
-    let reverseScale = ourScale.reverse();
-    reverseScale.shift();
-    setScaleNotes(`|${scales[scale]} ${reverseScale}|`);
-  }, [scale]);
-
-  // reshuffle the scale when settings change
-  useEffect(() => sequenceScales(), [sequenceScales]);
+  const {
+    order,
+    setOrder,
+    scale,
+    scaleIndex,
+    previousScale,
+    nextScale,
+    scaleCount,
+    scaleNotes,
+  } = useScale();
 
   return (
     <Container>
@@ -129,7 +81,7 @@ export default function Scales() {
           currentName={scale}
           onPrevious={previousScale}
           onNext={nextScale}
-          totalItems={scaleSequence ? scaleSequence.length : 0}
+          totalItems={scaleCount}
         />
       ) : (
         ''
