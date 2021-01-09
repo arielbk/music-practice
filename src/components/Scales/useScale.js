@@ -5,7 +5,7 @@ import { majorScales, minorScales } from './notes';
 const orders = {
   0: {
     major: 'clockwise',
-    minor: 'counterClockwise',
+    minor: 'counterclockwise',
   },
   1: {
     major: 'shuffle',
@@ -21,7 +21,7 @@ const orders = {
   },
   4: {
     major: 'off',
-    minor: 'counterClockwise',
+    minor: 'counterclockwise',
   },
   5: {
     major: 'off',
@@ -38,35 +38,36 @@ export default function useScale() {
   const [scale, setScale] = useState(null);
   // string notation for the current cale
   const [scaleNotes, setScaleNotes] = useState(null);
-  // setting for how the sequence is generated
-  const [order, setOrder] = useState('0');
+
+  // setting for how the major sequence is generated
+  const [majorOrder, setMajorOrder] = useState('clockwise');
+  // setting for how the minor sequence is generated
+  const [minorOrder, setMinorOrder] = useState('clockwise');
 
   // generate a new sequence of scales
   const sequenceScales = useCallback(() => {
     setScaleIndex(0);
-    const { major, minor } = orders[order];
-
     const majorNames = Object.keys(majorScales);
     const minorNames = Object.keys(minorScales);
 
     let scaleNames = [];
 
-    if (major === 'clockwise')
+    if (majorOrder === 'clockwise')
       majorNames.forEach((scale) => scaleNames.push(scale));
-    else if (major === 'counterClockwise')
+    else if (majorOrder === 'counterclockwise')
       majorNames.reverse().forEach((scale) => scaleNames.push(scale));
-    else if (major === 'shuffle')
+    else if (majorOrder === 'shuffle')
       shuffleArray(majorNames).forEach((scale) => scaleNames.push(scale));
 
-    if (minor === 'clockwise')
+    if (minorOrder === 'clockwise')
       minorNames.forEach((scale) => scaleNames.push(scale));
-    else if (minor === 'counterClockwise')
+    else if (minorOrder === 'counterclockwise')
       minorNames.reverse().forEach((scale) => scaleNames.push(scale));
-    else if (minor === 'shuffle')
+    else if (minorOrder === 'shuffle')
       shuffleArray(minorNames).forEach((scale) => scaleNames.push(scale));
 
     setScaleSequence(scaleNames);
-  }, [order]);
+  }, [majorOrder, minorOrder]);
 
   // go to next scale or regenerate
   const nextScale = () => {
@@ -96,11 +97,13 @@ export default function useScale() {
   }, [scale]);
 
   // reshuffle the scale when settings change
-  useEffect(() => sequenceScales(), [sequenceScales, order]);
+  useEffect(() => sequenceScales(), [sequenceScales, majorOrder, minorOrder]);
 
   return {
-    order,
-    setOrder,
+    majorOrder,
+    setMajorOrder,
+    minorOrder,
+    setMinorOrder,
     scale,
     scaleIndex,
     previousScale,

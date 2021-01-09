@@ -1,6 +1,8 @@
 import {
   Button,
+  Flex,
   Heading,
+  HStack,
   Modal,
   ModalCloseButton,
   ModalContent,
@@ -12,7 +14,12 @@ import {
 } from '@chakra-ui/react';
 import { BiShuffle } from 'react-icons/bi';
 
-const ScaleOrderModal = ({ order, setOrder }) => {
+const ScaleOrderModal = ({
+  majorOrder,
+  setMajorOrder,
+  minorOrder,
+  setMinorOrder,
+}) => {
   const { isOpen, onClose, onOpen } = useDisclosure();
   return (
     <>
@@ -23,19 +30,31 @@ const ScaleOrderModal = ({ order, setOrder }) => {
         <ModalOverlay />
         <ModalContent width="600px" px={16} py={8}>
           <ModalCloseButton />
-          <Heading size="md" mt={8}>
+          <Heading size="md" mt={4}>
             Select the configuration in which scales should appear:
           </Heading>
-          <RadioGroup onChange={setOrder} value={order}>
-            <Stack py={8}>
-              <Radio value="0">Major clockwise, minor counterclockwise</Radio>
-              <Radio value="1">Major and minor shuffle</Radio>
-              <Radio value="2">Major clockwise</Radio>
-              <Radio value="3">Major shuffle</Radio>
-              <Radio value="4">Minor counterclockwise</Radio>
-              <Radio value="5">Minor shuffle</Radio>
-            </Stack>
-          </RadioGroup>
+          <Flex justifyContent="space-around" py={8}>
+            <RadioGroup onChange={setMajorOrder} value={majorOrder}>
+              <Heading size="sm" mb={4}>
+                Major
+              </Heading>
+              <Stack>
+                <Radio value="clockwise">Clockwise</Radio>
+                <Radio value="counterclockwise">Anti-clockwise</Radio>
+                <Radio value="off">Off</Radio>
+              </Stack>
+            </RadioGroup>
+            <RadioGroup onChange={setMinorOrder} value={minorOrder}>
+              <Heading size="sm" mb={4}>
+                Minor
+              </Heading>
+              <Stack>
+                <Radio value="clockwise">Clockwise</Radio>
+                <Radio value="counterclockwise">Anti-clockwise</Radio>
+                <Radio value="off">Off</Radio>
+              </Stack>
+            </RadioGroup>
+          </Flex>
         </ModalContent>
       </Modal>
     </>

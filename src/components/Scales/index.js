@@ -47,8 +47,10 @@ const Settings = styled.div`
 export default function Scales() {
   const [isCofOpen, setIsCofOpen] = useState(false);
   const {
-    order,
-    setOrder,
+    majorOrder,
+    setMajorOrder,
+    minorOrder,
+    setMinorOrder,
     scale,
     scaleIndex,
     previousScale,
@@ -60,7 +62,12 @@ export default function Scales() {
   return (
     <Container>
       <Settings>
-        <ScaleOrder order={order} setOrder={setOrder} />
+        <ScaleOrder
+          majorOrder={majorOrder}
+          setMajorOrder={setMajorOrder}
+          minorOrder={minorOrder}
+          setMinorOrder={setMinorOrder}
+        />
         <Button leftIcon={<FaPuzzlePiece />} onClick={() => setIsCofOpen(true)}>
           Circle of Fifths
         </Button>
