@@ -2,6 +2,33 @@ import { useState, useEffect, useCallback } from 'react';
 import shuffleArray from '../../utils/shuffleArray';
 import { majorScales, minorScales } from './notes';
 
+const orders = {
+  0: {
+    major: 'clockwise',
+    minor: 'counterClockwise',
+  },
+  1: {
+    major: 'shuffle',
+    minor: 'shuffle',
+  },
+  2: {
+    major: 'clockwise',
+    minor: 'off',
+  },
+  3: {
+    major: 'shuffle',
+    minor: 'off',
+  },
+  4: {
+    major: 'off',
+    minor: 'counterClockwise',
+  },
+  5: {
+    major: 'off',
+    minor: 'shuffle',
+  },
+};
+
 export default function useScale() {
   // array of scale name strings
   const [scaleSequence, setScaleSequence] = useState(null);
@@ -17,18 +44,28 @@ export default function useScale() {
   // generate a new sequence of scales
   const sequenceScales = useCallback(() => {
     setScaleIndex(0);
+    const { major, minor } = orders[order];
 
-    let scales;
-    if (order === '0' || order === '1')
-      scales = { ...majorScales, ...minorScales };
-    if (order === '2' || order === '3') scales = { ...majorScales };
-    if (order === '4' || order === '5') scales = { ...minorScales };
-    const scaleNames = Object.keys(scales);
+    const majorNames = Object.keys(majorScales);
+    const minorNames = Object.keys(minorScales);
 
-    const isShuffle = order === '1' || order === '3' || order === '5';
-    const newScaleSequence = isShuffle ? shuffleArray(scaleNames) : scaleNames;
+    let scaleNames = [];
 
-    setScaleSequence(newScaleSequence);
+    if (major === 'clockwise')
+      majorNames.forEach((scale) => scaleNames.push(scale));
+    else if (major === 'counterClockwise')
+      majorNames.reverse().forEach((scale) => scaleNames.push(scale));
+    else if (major === 'shuffle')
+      shuffleArray(majorNames).forEach((scale) => scaleNames.push(scale));
+
+    if (minor === 'clockwise')
+      minorNames.forEach((scale) => scaleNames.push(scale));
+    else if (minor === 'counterClockwise')
+      minorNames.reverse().forEach((scale) => scaleNames.push(scale));
+    else if (minor === 'shuffle')
+      shuffleArray(minorNames).forEach((scale) => scaleNames.push(scale));
+
+    setScaleSequence(scaleNames);
   }, [order]);
 
   // go to next scale or regenerate
